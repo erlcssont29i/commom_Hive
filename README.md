@@ -18,8 +18,6 @@ presto 用法：select substr(cast(current_date - interval '1' month as varchar)
 可以在查询前加上 "set hive.strict.checks.type.safety=false; set hive.mapred.mode=nonstrict;" .
 
 5.hive 语法规范化
-转至元数据结尾
-由 群演 (朱伟)创建, 最后修改于八月 13, 2018 转至元数据起始
 总结我们遇到过的各种hive问题，其中大半以上是由于用法不规范导致的。尤其是hive的隐式类型转换，经常导致数据结果不正确。
 
 为了避免类似情况重复发生，倡导更规范的语法，我们决定采用更严格的语法限制，以下类型的hql语句，之前能正常执行，之后执行会报错。
