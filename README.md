@@ -209,3 +209,106 @@ group by kdt_id,par) b
 on a.kdt_id=b.kdt_id
 ;
 ````
+-----
+````
+create table if not exists bi.collect_gift_activity_join_uv (
+    kdt_id  			bigint  comment '店铺id' ,	
+    is_open 			smallint comment '是否开启 0:关闭,1:开启' ,	
+    coupon_group_id 	bigint 	comment '优惠券活动id' ,	
+    points	 			bigint  comment  '积分' ,
+    created_day 		string 	comment '创建时间' ,	
+    updated_day 		string 	comment '修改时间' ,
+    team_name   		string	comment '店铺名称',
+    team_type   		int 	comment '店铺类型' ,
+    team_property 		int 	comment '店铺属性' ,
+    wait_uid_num   		bigint 	comment '待审核用户数', -- 待审核
+    success_uid_num		bigint 	comment '审核通过用户数', -- 审核通过
+    fail_uid_num   		bigint 	comment '审核拒绝用户数', -- 审核拒绝
+    send_sucess_uid_num bigint 	comment '商家发送成功用户数',
+    click_collect_uv  	bigint 	comment '点击收藏有礼图标的用户数(UV)',
+    click_submit_uv 	bigint 	comment '点击提交审核按钮的用户数(UV)'
+)
+comment '小程序收藏有礼的B端使用＆C端參與&埋点'
+stored as orc
+;
+
+
+insert overwrite table bi.collect_gift_activity_join_uv
+
+ -- set hive.strict.checks.large.query=false; 
+ -- set hive.mapred.mode=nonstrict;
+
+select
+    a.kdt_id,	
+    a.is_open,	
+    a.coupon_group_id,	
+    a.points	,
+    substr(a.created_at,1,10) as created_day,	
+    substr(a.updated_at,1,10) as updated_day,
+    a.team_name,
+    a.team_type,
+    a.team_property ,
+    a.wait_uid_num, -- 待审核
+    a.success_uid_num, -- 审核通过
+    a.fail_uid_num, -- 审核拒绝
+    a.send_sucess_uid_num,
+    b.click_collect_uv,
+    b.click_submit_uv
+
+FROM
+(select 
+    kdt_id,	
+    is_open,	
+    coupon_group_id,	
+    points	,
+    created_at,	
+    updated_at,
+    team_name,
+    team_type,
+    team_property ,
+    wait_uid_num, -- 待审核
+    success_uid_num, -- 审核通过
+    fail_uid_num, -- 审核拒绝
+    send_sucess_uid_num
+from bi.collect_gift_activity_join)a
+left join
+(select 
+	kdt_id ,            
+	coalesce(sum(click_collect_uv),0) as click_collect_uv ,
+	coalesce(sum(click_submit_uv),0) as click_submit_uv
+from bi.collect_gift_log
+where par>='20180101'
+group by kdt_id) b ON a.kdt_id=b.kdt_id
+;
+
+````
+````
+create table if not exists bi.collect_gift_log
+
+(current_day int,
+kdt_id             bigint comment 'KDT_ID',
+click_collect_uv    bigint comment '点击收藏有礼图标的用户数(UV)',
+click_submit_uv     bigint comment '点击提交审核按钮的用户数(UV)'
+)
+comment '收藏有礼点击活动入口&提交审核用户数'
+partitioned by (par string)
+stored as orc
+;
+
+
+insert overwrite table bi.collect_gift_log partition(par = '${DP_1_DAYS_AGO_Ymd}')
+
+SELECT 
+    '${DP_1_DAYS_AGO_Ymd}' as current_day,
+    kdt_id,
+    count(distinct(if(event_sign='click_collect_gift',uuid,NULL))) as click_collect_uv ,-- 点击点击收藏有礼图标的用户数
+    count(distinct(if(event_sign='click_submit_audit',uuid,NULL))) as click_submit_uv  -- 点击提交审核按钮	
+from  dw.dws_log_wsc_c
+where event_type='click'
+-- and kdt_id='19448705'
+and par = '${DP_1_DAYS_AGO_Ymd}'
+group by -- par,
+        '${DP_1_DAYS_AGO_Ymd}',
+        kdt_id
+;
+````
