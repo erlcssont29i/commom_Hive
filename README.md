@@ -57,6 +57,7 @@ order by 不带limit
 set hive.mapred.mode=nonstrict;
 set hive.strict.checks.large.query=false;
 
+````
 ----排序---
 --  S3商品月销量top1商品
 create table  dev.Jx_deal_Stores_Order_Goods as 
@@ -96,11 +97,11 @@ from
      )t2
  where t2.sold_item_rank =1 
 ;
-
+````
 
 
 --
-
+````
 @orderBy= created_time 
 
 SELECT 
@@ -145,8 +146,9 @@ and replace(cast(created_time as varchar), '-', '')<= cast( ${date_end} as varch
 and replace(cast(created_time as varchar), '-', '')>= cast( ${date_start} as varchar)
 group by created_time
 ;
+````
 
-
+````
 drop table bi.mkt_activation_raw_data;
 
 
@@ -205,3 +207,5 @@ from dw.dwd_login_d
 -- where par
 group by kdt_id,par) b
 on a.kdt_id=b.kdt_id
+;
+````
