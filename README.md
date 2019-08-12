@@ -51,7 +51,10 @@ b	4	5	6	6
 ```
 row_number() over(partition by userId order by validVisitTime
 ```
------
+## NULL
+```
+coalesce(corp_login_cou1d,0) as corp_login_cou1d,
+```
 
 ## 建表
 ```
@@ -68,7 +71,7 @@ stored as orc
 insert overwrite TABLE dw_jdy.dws_service_login_stats_d   partition (dt='${dt}')
 ```
 
-
+-----
 可以在查询前加上 "set hive.strict.checks.type.safety=false; set hive.mapred.mode=nonstrict;" .
 
 5.hive 语法规范化
