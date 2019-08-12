@@ -51,7 +51,7 @@ b	4	5	6	6
 ```
 row_number() over(partition by userId order by validVisitTime
 ```
-## NULL
+## 取代NULL
 ```
 coalesce(corp_login_cou1d,0) as corp_login_cou1d,
 ```
