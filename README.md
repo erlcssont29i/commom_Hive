@@ -2,7 +2,8 @@
 
 ## 時間
 ````
-select add_months(trunc(CURRENT_TIMESTAMP,'MM'),-5),
+select 
+add_months(trunc(CURRENT_TIMESTAMP,'MM'),-5),
 add_months(trunc(CURRENT_TIMESTAMP,'MM'),-1), 
 add_months(trunc(CURRENT_TIMESTAMP,'MM'),0), 
 add_months(trunc(CURRENT_TIMESTAMP,'MM'),1),
