@@ -1,4 +1,6 @@
 # commom_SQL
+
+## 時間
 ````
 select add_months(trunc(CURRENT_TIMESTAMP,'MM'),-5),
 add_months(trunc(CURRENT_TIMESTAMP,'MM'),-1), 
@@ -12,7 +14,47 @@ index	  _c0           _c1       _c2         _c3         _c4
 ````
 presto 用法：select substr(cast(current_date - interval '1' month as varchar), 1, 7);
 ````
+```
+dt = date_sub(current_date,1) --昨天
+```
+
+## 列轉行
+collect_set :去重列转行
+collect_list :不去重列转行
+```
+SELECT shop
+      ,collect_list(shangpin_num)[0]
+      ,collect_list(shangpin_num)[1]
+      ,collect_list(shangpin_num)[2]
+      ,collect_list(shangpin_num)[3]
+FROM temp_test5
+GROUP BY shop;
+ 
+shop	_c1	_c2	_c3	_c4
+a	1	2	3	3
+b	4	5	6	6
+```
+
+## 開窗函數
+```
+row_number() over(partition by userId order by validVisitTime
+```
 -----
+
+## 建表
+```
+drop table if exists  dw_jdy.dws_service_login_stats_d ;
+create table if not exists  dw_jdy.dws_service_login_stats_d
+(
+
+)
+comment ''
+partitioned BY (  par string)  
+stored as orc
+;
+
+insert overwrite TABLE dw_jdy.dws_service_login_stats_d   partition (dt='${dt}')
+```
 
 
 可以在查询前加上 "set hive.strict.checks.type.safety=false; set hive.mapred.mode=nonstrict;" .
@@ -58,22 +100,7 @@ set hive.mapred.mode=nonstrict;
 set hive.strict.checks.large.query=false;
 
 
-## 列轉行
-collect_set :去重列转行
-collect_list :不去重列转行
-```
-SELECT shop
-      ,collect_list(shangpin_num)[0]
-      ,collect_list(shangpin_num)[1]
-      ,collect_list(shangpin_num)[2]
-      ,collect_list(shangpin_num)[3]
-FROM temp_test5
-GROUP BY shop;
- 
-shop	_c1	_c2	_c3	_c4
-a	1	2	3	3
-b	4	5	6	6
-```
+
 
 
 
