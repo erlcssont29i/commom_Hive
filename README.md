@@ -58,3 +58,23 @@ set hive.mapred.mode=nonstrict;
 set hive.strict.checks.large.query=false;
 
 
+## 列轉行
+collect_set :去重列转行
+collect_list :不去重列转行
+```
+SELECT shop
+      ,collect_list(shangpin_num)[0]
+      ,collect_list(shangpin_num)[1]
+      ,collect_list(shangpin_num)[2]
+      ,collect_list(shangpin_num)[3]
+FROM temp_test5
+GROUP BY shop;
+ 
+shop	_c1	_c2	_c3	_c4
+a	1	2	3	3
+b	4	5	6	6
+```
+
+
+
+
