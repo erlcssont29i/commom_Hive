@@ -23,6 +23,17 @@ collect_set :去重列转行
 collect_list :不去重列转行
 ```
 SELECT shop
+      ,concat_ws('-',collect_list(cast(shangpin_num as string)))
+FROM temp_test5
+GROUP BY shop;
+ 
+shop	_c1
+a	1-2-3-3
+b	4-5-6-6
+```
+将shangpin_num中所有的元素各自作为一列
+```
+SELECT shop
       ,collect_list(shangpin_num)[0]
       ,collect_list(shangpin_num)[1]
       ,collect_list(shangpin_num)[2]
